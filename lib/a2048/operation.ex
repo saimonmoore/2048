@@ -16,15 +16,12 @@ defmodule A2048.Operation do
 
   ## Examples
 
-  iex> IO.puts "Shift left: no doubling"
   iex> board = [[0,0,2,0],[0,2,0,0],[2,4,0,0],[0,2,0,0]]
   iex> expected = [[2,0,0,0],[2,0,0,0],[2,4,0,0],[2,0,0,0]]
   iex> A2048.Operation.shift(:left, board) === expected
   true
-  iex> IO.puts "Shift left: with doubling"
   iex> board = [[2,0,2,0],[4,2,0,2],[2,4,4,8],[2,2,2,2]]
-  iex> expected = [[2,2,0,0],[4,2,2,0],[2,8,8,0],[4,4,0,0]]
-  iex> IO.inspect A2048.Operation.shift(:left, board)
+  iex> expected = [[4,0,0,0],[4,4,0,0],[2,8,8,0],[4,4,0,0]]
   iex> A2048.Operation.shift(:left, board) === expected
   true
 
@@ -51,16 +48,40 @@ defmodule A2048.Operation do
 
   defp double_likes(row) do
     row
-    |> Enum.chunk(2)
+    |> Enum.chunk(2,1)
+    |> filter_chunks
     |> Enum.map(&double_like_pairs/1)
-    |> List.flatten
+    |> flatten_row
     |> shift_zeros_left
   end
 
-  defp double_like_pairs([head|tail]) do
+  defp double_like_pairs([head,tail]) do
     cond do
       head == tail -> [head*2,0]
       true -> [head, tail]
+    end
+  end
+
+  defp flatten_row(row) do
+    row_length = length(row)
+    case row_length do
+      3 -> row |> squeeze
+      _ -> List.flatten(row)
+    end
+  end
+
+  defp squeeze(row) do
+    [head, middle, tail] = row
+    [Enum.at(head, 0), middle, Enum.at(tail, -1)]
+    |> List.flatten
+  end
+
+  defp filter_chunks(row) do
+    [first, middle, last] = row
+    [head, tail] = middle
+    cond do
+      head == tail -> [first, middle, last]
+      true -> [first, last]
     end
   end
 end
