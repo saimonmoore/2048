@@ -19,11 +19,14 @@ defmodule A2048.Operation do
   iex> IO.puts "Shift left: no doubling"
   iex> board = [[0,0,2,0],[0,2,0,0],[2,4,0,0],[0,2,0,0]]
   iex> expected = [[2,0,0,0],[2,0,0,0],[2,4,0,0],[2,0,0,0]]
-  iex> A2048.Operation.shift(:left, board) == expected
+  iex> A2048.Operation.shift(:left, board) === expected
+  true
   iex> IO.puts "Shift left: with doubling"
   iex> board = [[2,0,2,0],[4,2,0,2],[2,4,4,8],[2,2,2,2]]
-  iex> expected = [[4,0,0,0],[4,4,0,0],[2,8,8,0],[4,4,0,0]]
-  iex> A2048.Operation.shift(:left, board) == expected
+  iex> expected = [[2,2,0,0],[4,2,2,0],[2,8,8,0],[4,4,0,0]]
+  iex> IO.inspect A2048.Operation.shift(:left, board)
+  iex> A2048.Operation.shift(:left, board) === expected
+  true
 
   """
   def shift(:left, board) do
